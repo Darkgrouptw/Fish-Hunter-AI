@@ -82,6 +82,7 @@
     <ClCompile Include="GeneratedFiles\Release\moc_FishHunterRecorder.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="HookGlobalKeyBoard.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +112,7 @@
   <ItemGroup>
     <ClInclude Include="CaptureChrome.h" />
     <ClInclude Include="GeneratedFiles\ui_FishHunterRecorder.h" />
+    <ClInclude Include="HookGlobalKeyBoard.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="FishHunterRecorder.qrc">

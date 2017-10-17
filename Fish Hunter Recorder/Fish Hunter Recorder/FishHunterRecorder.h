@@ -4,6 +4,7 @@
 #include "ui_FishHunterRecorder.h"
 
 #include "CaptureChrome.h"
+#include "HookGlobalKeyBoard.h"
 #include <QTimer>
 
 using namespace std;
@@ -24,8 +25,9 @@ public:
 private:
 	Ui::FishHunterRecorderClass ui;
 
-	QTimer			*screenshotTimer;
-	CaptureChrome	chrome;
+	QTimer				*screenshotTimer;
+	CaptureChrome		chrome;
+	HookGlobalKeyBoard	keyboard;
 
 private slots:
 	void ScreenShotAtChrome();

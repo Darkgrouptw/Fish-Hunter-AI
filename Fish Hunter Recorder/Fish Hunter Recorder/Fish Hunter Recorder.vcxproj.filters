@@ -17,6 +17,9 @@
     <ClCompile Include="CaptureChrome.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HookGlobalKeyBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource Files">
@@ -71,6 +74,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="CaptureChrome.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HookGlobalKeyBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
