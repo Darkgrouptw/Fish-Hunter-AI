@@ -58,10 +58,23 @@ bool CaptureChrome::IsReadyToCapture()
 		return false;
 	return true;
 }
-QPixmap CaptureChrome::TakeScreenShot(int w, int h)
+QPixmap CaptureChrome::TakeScreenShot()
 {
 	QScreen *screen = QGuiApplication::primaryScreen();
 	QPixmap screenshot = screen->grabWindow(0);
-	screenshot = screenshot.scaled(w, h, Qt::KeepAspectRatio);
 	return screenshot;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Static 圖片操作相關
+//////////////////////////////////////////////////////////////////////////
+QPixmap CaptureChrome::TakeImportantPart(QPixmap screen)
+{
+	// 遊戲部分
+	// 從 ( 212, 114) ，大小 W = 1200, H = 861
+	return screen.copy(212, 114, 1200, 720);
+}
+QPixmap CaptureChrome::scaleTo(QPixmap img, int w, int h)
+{
+	return img.scaled(w, h, Qt::KeepAspectRatio);
 }

@@ -1,8 +1,12 @@
 #include "HookGlobalKeyBoard.h"
+
+#pragma region Static 變數區
 int HookGlobalKeyBoard::Width;
 int HookGlobalKeyBoard::Height;
-CaptureChrome HookGlobalKeyBoard::chrome;
 HHOOK HookGlobalKeyBoard::hook;
+CaptureChrome HookGlobalKeyBoard::chrome;
+FeatureObserved HookGlobalKeyBoard::featureOP;
+#pragma endregion
 
 HookGlobalKeyBoard::HookGlobalKeyBoard()
 {
@@ -17,7 +21,8 @@ HookGlobalKeyBoard::~HookGlobalKeyBoard()
 //////////////////////////////////////////////////////////////////////////
 // 按鍵對應表
 // Esc	=> 結束
-// S	=> 存檔
+// S	=> 截圖
+// Z	=> 測試用的按鈕
 //////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK HookGlobalKeyBoard::GlobalEvent(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -33,8 +38,9 @@ LRESULT CALLBACK HookGlobalKeyBoard::GlobalEvent(int nCode, WPARAM wParam, LPARA
 			exit(0);
 			break;
 		case 'S':
-			chrome.TakeScreenShot(1920, 1080).save("D:/FishHunter.png");
-			cout << "存出暫存檔 >> D:/FishHunter.png" << endl;
+			// 截圖
+			chrome.TakeScreenShot().save("D:/FishHunter.png");
+			cout << "存出截圖 >> D:/FishHunter.png" << endl;
 			break;
 		default:
 			cout << "KeyCode " << keyCode << endl;
