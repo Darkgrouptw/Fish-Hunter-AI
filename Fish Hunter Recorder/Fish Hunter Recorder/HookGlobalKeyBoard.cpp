@@ -6,6 +6,7 @@ int HookGlobalKeyBoard::Height;
 HHOOK HookGlobalKeyBoard::hook;
 CaptureChrome HookGlobalKeyBoard::chrome;
 FeatureObserved HookGlobalKeyBoard::featureOP;
+QTimer *HookGlobalKeyBoard::screenshotTimer;
 #pragma endregion
 
 HookGlobalKeyBoard::HookGlobalKeyBoard()
@@ -22,7 +23,7 @@ HookGlobalKeyBoard::~HookGlobalKeyBoard()
 // 按鍵對應表
 // Esc	=> 結束
 // S	=> 截圖
-// Z	=> 測試用的按鈕
+// Q	=> 暫停 / 繼續
 //////////////////////////////////////////////////////////////////////////
 LRESULT CALLBACK HookGlobalKeyBoard::GlobalEvent(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -38,15 +39,32 @@ LRESULT CALLBACK HookGlobalKeyBoard::GlobalEvent(int nCode, WPARAM wParam, LPARA
 			exit(0);
 			break;
 		case 'S':
+		{
 			// 截圖
-			chrome.TakeScreenShot().save("D:/FishHunter.png");
-			cout << "存出截圖 >> D:/FishHunter.png" << endl;
+			QPixmap screen = chrome.TakeScreenShot();
+			screen.save("D:/FishHunter_Full.png");
+
+			QPixmap gamePlay = chrome.TakeImportantPart(screen);
+			gamePlay.save("D:/FishHunter_Imp.png");
+
+			featureOP.SetScreenShotImage(gamePlay);
+			imwrite("D:/FishHunter_Imp_Gray.png", featureOP.ToBinarization(107));
+			cout << "存出截圖" << endl;
+			break;
+		}
+		case 'Q':
+			if (screenshotTimer != NULL)
+			{
+				if (screenshotTimer->isActive())
+					screenshotTimer->stop();
+				else
+					screenshotTimer->start(100);
+			}
 			break;
 		default:
 			cout << "KeyCode " << keyCode << endl;
 			break;
 		}
 	}
-	//cout << "Press" << endl;
 	return CallNextHookEx(hook, nCode, wParam, lParam);
 }
