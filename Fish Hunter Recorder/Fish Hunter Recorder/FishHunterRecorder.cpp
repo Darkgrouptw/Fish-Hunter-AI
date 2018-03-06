@@ -23,7 +23,6 @@ FishHunterRecorder::FishHunterRecorder(QWidget *parent)
 	HookGlobalKeyBoard::screenshotTimer = screenshotTimer;
 	#pragma endregion
 }
-
 void FishHunterRecorder::ScreenShotAtChrome()
 {
 	int w = ui.GameView->width();

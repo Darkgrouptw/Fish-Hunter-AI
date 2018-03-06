@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'FishHunterRecorder.ui'
 **
-** Created by: Qt User Interface Compiler version 5.8.0
+** Created by: Qt User Interface Compiler version 5.10.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -49,8 +49,8 @@ public:
 
     void retranslateUi(QMainWindow *FishHunterRecorderClass)
     {
-        FishHunterRecorderClass->setWindowTitle(QApplication::translate("FishHunterRecorderClass", "FishHunterRecorder", Q_NULLPTR));
-        GameView->setText(QApplication::translate("FishHunterRecorderClass", "TextLabel", Q_NULLPTR));
+        FishHunterRecorderClass->setWindowTitle(QApplication::translate("FishHunterRecorderClass", "FishHunterRecorder", nullptr));
+        GameView->setText(QApplication::translate("FishHunterRecorderClass", "TextLabel", nullptr));
         DebugMessage->setText(QString());
     } // retranslateUi
 

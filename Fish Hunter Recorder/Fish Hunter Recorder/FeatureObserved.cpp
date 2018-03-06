@@ -2,13 +2,13 @@
 
 FeatureObserved::FeatureObserved()
 {
+	#pragma region 參考圖片相關
 	ReferenceNumber = new Mat[10];
-
 	// 跑十個數字，把所有的參考圖片加進來
 	for (int i = 0; i < 10; i++)
 	{
-		QString filePath = "../../Map/" + QString::number(i) + ".png";
-		//QString filePath = "../Map/" + QString::number(i) + ".png";
+		QString filePath = "../../Images/Map/" + QString::number(i) + ".png";
+		//QString filePath = "../Images/Map/" + QString::number(i) + ".png";
 		ReferenceNumber[i] = imread(filePath.toStdString(), CV_LOAD_IMAGE_GRAYSCALE);
 
 		// 判斷沒有讀到的狀況
@@ -19,6 +19,30 @@ FeatureObserved::FeatureObserved()
 			exit(0);
 		}
 	}
+	#pragma endregion
+	#pragma region 拿背景相關
+	QString filePath = "../../Images/Masks/Important Part Mask.png";
+	//QString filePath = "../Images/Masks/Important Part Mask.png";
+	InfoMask = imread(filePath.toStdString(), CV_LOAD_IMAGE_GRAYSCALE);
+
+	// 清空
+	int totalPixels = InfoMask.rows * InfoMask.cols;
+	int *_histogramMap = new int[totalPixels * 3 * 256];
+	memset(_histogramMap, 0, sizeof(int) * totalPixels * 3 * 256);
+
+	HistogramMap = new int ***[InfoMask.rows];
+	for (int i = 0; i < InfoMask.rows; i++)
+	{
+		HistogramMap[i] = new int **[InfoMask.cols];
+		for (int j = 0; j < InfoMask.cols; j++)
+		{
+			HistogramMap[i][j] = new int*[3];
+			for (int c = 0; c < 3; c++)
+				HistogramMap[i][j][c] = &_histogramMap[(i * InfoMask.cols + j) * 3 * 256 + c * 256];
+		}
+	}
+	#pragma endregion
+
 }
 FeatureObserved::~FeatureObserved()
 {
@@ -98,7 +122,7 @@ QString FeatureObserved::GetPlayerState(int n)
 	// 所以用 Find Contour 來解決
 	// 且要先判斷他是不是 "破產"
 	//////////////////////////////////////////////////////////////////////////
-	if (IsPlayable)
+	if (IsPlayable )
 	{
 		PosX = PlayerGunPointX[n];
 		PosY = PlayerGunPointY[n];
@@ -114,6 +138,11 @@ QString FeatureObserved::GetPlayerState(int n)
 		for (int i = 0; i < contours.size(); i++)
 		{
 			Rect tempRect = boundingRect(contours[i]);
+
+			// 濾掉雜訊
+			if (tempRect.width < 5 || tempRect.height < 10)
+				continue;
+
 			tempRect = Rect(tempRect.x - 1, tempRect.y - 1, tempRect.width + 2, tempRect.height + 2);
 			boundingBox.push_back(tempRect);
 		}
@@ -219,4 +248,69 @@ void FeatureObserved::Swap(Rect &a, Rect &b)
 	Rect temp = a;
 	a = b;
 	b = temp;
+}
+ 
+void FeatureObserved::DoHistogramBackground()
+{
+	for (int y = 0; y < img.rows; y++)
+		for (int x = 0; x < img.cols; x++)
+		{
+			if (IsInfoPart(y, x))
+			{
+				Vec4b color = img.at<Vec4b>(y, x);
+				int B = color[0];
+				int G = color[1];
+				int R = color[2];
+				HistogramMap[y][x][0][B]++;
+				HistogramMap[y][x][1][G]++;
+				HistogramMap[y][x][2][R]++;
+			}
+		}
+}
+
+Mat FeatureObserved::ComputeBackground()
+{
+	Mat OutputBackground = Mat::zeros(Size(img.cols, img.rows), CV_8UC3);
+	for (int y = 0; y < img.rows; y++)
+		for (int x = 0; x < img.cols; x++)
+			if (IsInfoPart(y, x))
+			{
+				Vec3b resultColor;
+				for (int c = 0; c < 3; c++)
+				{
+					int bigAmount = -1;
+					int bigIndex = -1;
+					for (int v = 0; v < 256; v++)
+					{
+						int value = HistogramMap[y][x][c][v];
+						if (bigAmount < value)
+						{
+							bigIndex = v;
+							bigAmount = value;
+						}
+					}
+					resultColor[c] = bigIndex;
+				}
+				OutputBackground.at<Vec3b>(y, x) = resultColor;
+			}
+
+	return OutputBackground;
+}
+
+bool FeatureObserved::IsInfoPart(int rowIndex, int colIndex)
+{
+	#pragma region 判斷例外狀況
+	if (rowIndex > InfoMask.rows || colIndex > InfoMask.cols || rowIndex < 0 || colIndex < 0)
+	{
+		cout << "超出範圍!!" << endl;
+		system("PAUSE");
+		exit(0);
+	}
+	#pragma endregion
+	#pragma region 用 Mask 來判斷
+	uchar color = InfoMask.at<uchar>(rowIndex, colIndex);
+	if (color > 128)
+		return true;
+	return false;
+	#pragma endregion
 }
